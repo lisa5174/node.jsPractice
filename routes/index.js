@@ -20,4 +20,31 @@ router.get("/", function (req, res, next) {
   });
 });
 
+// add page
+router.get("/add", function (req, res, next) {
+  // use userAdd.ejs
+  res.render("userAdd", { title: "Add User" });
+});
+
+// add post
+router.post("/userAdd", function (req, res, next) {
+  console.log("有進來嗎?");
+  var db = req.con;
+
+  var sql = {
+    userid: req.body.userid,
+    password: req.body.password,
+    email: req.body.email,
+  };
+
+  //console.log(sql);
+  var qur = db.query("INSERT INTO account SET ?", sql, function (err, rows) {
+    if (err) {
+      console.log(err);
+    }
+    res.setHeader("Content-Type", "application/json");
+    res.redirect("/");
+  });
+});
+
 module.exports = router;

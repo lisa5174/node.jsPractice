@@ -6,11 +6,24 @@
   </head>
   <body>
     <h1>Account - List</h1>
+
+    <div class="search">
+      <label>UserId：</label>
+      <input
+        type="text"
+        name="suserid"
+        value="<%=user  %>"
+        placeholder="input the userid"
+      />
+      <input type="button" name="sSearch" value="Search" onclick="Search();" />
+    </div>
+
     <input
       type="submit"
       value="Add"
       onclick="javascript: location.href='add'"
     />
+
     <table>
       <tr>
         <th>id</th>
@@ -24,8 +37,41 @@
         <td><%= data[i].userid %></td>
         <td><%= data[i].password %></td>
         <td><%= data[i].email %></td>
+        <td>
+          　<input
+            type="button"
+            name="edit"
+            value="Edit"
+            onclick="Edit('<%= data[i].id  %>');"
+          />
+        </td>
+        <td>
+          <input
+            type="button"
+            name="delete"
+            value="Delete"
+            onclick="Delete('<%= data[i].id  %>');"
+          />
+        </td>
       </tr>
       <% } %>
     </table>
+    <script>
+      function Edit(id) {
+        window.location.href = "/userEdit?id=" + id;
+      }
+
+      function Delete(id) {
+        var rs = confirm("Confirm to delete?");
+        if (rs) {
+          window.location.href = "/userDelete?id=" + id;
+        }
+      }
+
+      function Search() {
+        var userid = document.getElementsByName("suserid")[0].value;
+        window.location.href = "/?user=" + userid;
+      }
+    </script>
   </body>
 </html>

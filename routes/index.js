@@ -1,52 +1,58 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
-  var db = req.con;
-  var data = "";
+router.get("/", (req, res, next) => {
+  //var db = req.con; 使用解構賦值
+  const { con } = req;
 
-  var user = "";
-  var user = req.query.user;
-  var filter = "";
+  let data = "";
+
+  //var user = req.query.user;
+  const { user } = req.query;
+
+  let filter = "";
   if (user) {
     filter = "WHERE userid = ?";
   }
 
   //account後面要有空白
-  db.query("SELECT * FROM account " + filter, user, function (err, rows) {
+  con.query(`SELECT * FROM account ${filter}`, user, (err, rows) => {
     if (err) {
       console.log(err);
     }
-    var data = rows;
+    data = rows;
     // use index.ejs
-    res.render("index", {
-      title: "Account Information",
-      data,
-      user,
-    });
+    //物件實字
+    // res.render("index", {
+    //   title: "Account Information",
+    //   data: data,
+    //   user: user,
+    // });
+    res.render("index", { title: "Account Information", data, user });
   });
 });
 
 // add page
-router.get("/add", function (req, res, next) {
+router.get("/add", (req, res, next) => {
   // use userAdd.ejs
   res.render("userAdd", { title: "Add User" });
 });
 
 // add post
-router.post("/userAdd", function (req, res, next) {
+router.post("/userAdd", (req, res, next) => {
   console.log("有進來嗎?");
-  var db = req.con;
+  const { con } = req;
 
-  var sql = {
-    userid: req.body.userid,
-    password: req.body.password,
-    email: req.body.email,
+  const { userid, password, email } = req.body;
+  let sql = {
+    userid: userid,
+    password: password,
+    email: email,
   };
 
   //console.log(sql);
-  var qur = db.query("INSERT INTO account SET ?", sql, function (err, rows) {
+  con.query("INSERT INTO account SET ?", sql, (err, rows) => {
     if (err) {
       console.log(err);
     }
@@ -56,61 +62,54 @@ router.post("/userAdd", function (req, res, next) {
 });
 
 // edit page
-router.get("/userEdit", function (req, res, next) {
-  var id = req.query.id;
-  var db = req.con;
-  var data = "";
+router.get("/userEdit", (req, res, next) => {
+  const { id } = req.query;
+  const { con } = req;
+  let data = "";
 
-  db.query("SELECT * FROM account WHERE id = ?", id, function (err, rows) {
+  con.query("SELECT * FROM account WHERE id = ?", id, (err, rows) => {
     if (err) {
       console.log(err);
     }
 
-    var data = rows;
-    res.render("userEdit", { title: "Edit Account", data: data });
+    let data = rows;
+    res.render("userEdit", { title: "Edit account", data });
   });
 });
 
 //編輯
-router.post("/userEdit", function (req, res, next) {
-  var db = req.con;
-  var id = req.body.id;
+router.post("/userEdit", (req, res, next) => {
+  const { con } = req;
+  const { id } = req.body;
 
-  var sql = {
-    userid: req.body.userid,
-    password: req.body.password,
-    email: req.body.email,
+  const { userid, password, email } = req.body;
+  let sql = {
+    userid: userid,
+    password: password,
+    email: email,
   };
 
-  var qur = db.query(
-    "UPDATE account SET ? WHERE id = ?",
-    [sql, id],
-    function (err, rows) {
-      if (err) {
-        console.log(err);
-      }
-
-      res.setHeader("Content-Type", "application/json");
-      res.redirect("/");
+  con.query("UPDATE account SET ? WHERE id = ?", [sql, id], (err, rows) => {
+    if (err) {
+      console.log(err);
     }
-  );
+
+    res.setHeader("Content-Type", "application/json");
+    res.redirect("/");
+  });
 });
 
 //刪除
-router.get("/userDelete", function (req, res, next) {
-  var id = req.query.id;
-  var db = req.con;
+router.get("/userDelete", (req, res, next) => {
+  const { id } = req.query;
+  const { con } = req;
 
-  var qur = db.query(
-    "DELETE FROM account WHERE id = ?",
-    id,
-    function (err, rows) {
-      if (err) {
-        console.log(err);
-      }
-      res.redirect("/");
+  con.query("DELETE FROM account WHERE id = ?", id, (err, rows) => {
+    if (err) {
+      console.log(err);
     }
-  );
+    res.redirect("/");
+  });
 });
 
 module.exports = router;

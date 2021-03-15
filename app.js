@@ -1,23 +1,30 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-
-// DataBase
-var mysql = require("mysql");
-
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "@final0308",
-  database: "test",
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+//用dotenv，找不到路徑，所以要自己加QWQ
+require("dotenv").config({
+  path: path.resolve(__dirname, "../../.env"),
 });
 
-con.connect(function (err) {
+// DataBase
+let mysql = require("mysql");
+
+let con = mysql.createConnection({
+  host: process.env.DB_HOST, //"localhost"
+  user: "root", //process.env.DB_USER
+  password: "@final0308", //process.env.DB_PASS
+  database: "test", //"test"
+});
+
+console.log(process.env["DB_HOST"]);
+console.log(process.env["DB_USER"]);
+
+con.connect((err) => {
   if (err) {
     console.log("connecting error");
     return;
@@ -25,7 +32,7 @@ con.connect(function (err) {
   console.log("connecting success");
 });
 
-var app = express();
+let app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -38,7 +45,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 // db state
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   req.con = con;
   next();
 });
@@ -47,12 +54,12 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get("env") === "development" ? err : {};

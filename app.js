@@ -7,22 +7,21 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 //用dotenv，找不到路徑，所以要自己加QWQ
-require("dotenv").config({
-  path: path.resolve(__dirname, "../../.env"),
-});
+require("dotenv").config();
 
 // DataBase
 let mysql = require("mysql");
 
 let con = mysql.createConnection({
   host: process.env.DB_HOST, //"localhost"
-  user: "root", //process.env.DB_USER
-  password: "@final0308", //process.env.DB_PASS
-  database: "test", //"test"
+  user: process.env.DB_USER, //"root"
+  password: process.env.DB_PASS, //"@final0308"
+  database: process.env.DB, //"test"
 });
 
-console.log(process.env["DB_HOST"]);
-console.log(process.env["DB_USER"]);
+// console.log(process.env.DB_HOST);
+// console.log(process.env.DB_USER);
+// console.log(process.env.DB);
 
 con.connect((err) => {
   if (err) {
